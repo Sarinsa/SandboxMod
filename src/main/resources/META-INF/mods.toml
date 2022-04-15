@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="GPL v3"
+
+[[mods]]
+modId="sandboxmod"
+version="${file.jarVersion}"
+displayName="SandboxMod"
+logoFile="sandboxmod.png"
+credits="Yeah"
+authors="Sarinsa"
+description='''
+Hello, this is the SandboxMod! It contains a bunch of random doodoo with a total lack of coherence!
+'''
+
+[[dependencies.sandboxmod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.sandboxmod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.5,1.17)"
+    ordering="NONE"
+    side="BOTH"
