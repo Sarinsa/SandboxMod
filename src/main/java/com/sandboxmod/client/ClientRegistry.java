@@ -18,12 +18,15 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import java.util.function.Supplier;
 
+import static com.sandboxmod.common.util.References.CORRUPTED_COLOR;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD, modid = SandboxMod.MODID)
 public class ClientRegistry {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         setBlockRenderType(SMBlocks.CORRUPTED_MASS, RenderType.cutout());
+        setBlockRenderType(SMBlocks.PURIFYING_FLOWER, RenderType.cutout());
     }
 
     private static void setBlockRenderType(Supplier<Block> blockSupplier, RenderType renderType) {
@@ -34,7 +37,7 @@ public class ClientRegistry {
     public static void registerBlockColors(ColorHandlerEvent.Block event) {
         BlockColors colors = event.getBlockColors();
 
-        colors.register((state, blockDisplayReader, pos, color) -> blockDisplayReader != null && pos != null ? BiomeColors.getAverageGrassColor(blockDisplayReader, pos) : 0x822BB5, SMBlocks.CORRUPTED_MASS.get());
+        colors.register((state, blockDisplayReader, pos, color) -> blockDisplayReader != null && pos != null ? BiomeColors.getAverageGrassColor(blockDisplayReader, pos) : CORRUPTED_COLOR, SMBlocks.CORRUPTED_MASS.get());
     }
 
     @SubscribeEvent

@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.IBiomeReader;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeContainer;
 import net.minecraft.world.chunk.Chunk;
@@ -47,6 +48,48 @@ public class BiomeHelper {
     //
     //------------------------------- COPY-PASTE STUFF FROM VANILLA -----------------------------------
     //
+
+
+    public static Biome getUncachedBiome(long biomeZoomSeed, IWorldReader worldReader, int x, int z) {
+        int i = x - 2;
+        int j = - 2;
+        int k = z - 2;
+        int l = i >> 2;
+        int i1 = j >> 2;
+        int j1 = k >> 2;
+        double d0 = (double)(i & 3) / 4.0D;
+        double d1 = (double)(j & 3) / 4.0D;
+        double d2 = (double)(k & 3) / 4.0D;
+        double[] adouble = new double[8];
+
+        for(int k1 = 0; k1 < 8; ++k1) {
+            boolean flag = (k1 & 4) == 0;
+            boolean flag1 = (k1 & 2) == 0;
+            boolean flag2 = (k1 & 1) == 0;
+            int l1 = flag ? l : l + 1;
+            int i2 = flag1 ? i1 : 0;
+            int j2 = flag2 ? j1 : j1 + 1;
+            double d3 = flag ? d0 : d0 - 1.0D;
+            double d4 = flag1 ? d1 : d1 - 1.0D;
+            double d5 = flag2 ? d2 : d2 - 1.0D;
+            adouble[k1] = getFiddledDistance(biomeZoomSeed, l1, i2, j2, d3, d4, d5);
+        }
+
+        int k2 = 0;
+        double d6 = adouble[0];
+
+        for(int l2 = 1; l2 < 8; ++l2) {
+            if (d6 > adouble[l2]) {
+                k2 = l2;
+                d6 = adouble[l2];
+            }
+        }
+
+        int i3 = (k2 & 4) == 0 ? l : l + 1;
+        int j3 = (k2 & 2) == 0 ? i1 : 0;
+        int k3 = (k2 & 1) == 0 ? j1 : j1 + 1;
+        return worldReader.getUncachedNoiseBiome(i3, j3, k3);
+    }
 
     public static int getBiomeColumnIndex(long biomeZoomSeed, int x, int z) {
         int i = x - 2;
@@ -117,7 +160,7 @@ public class BiomeHelper {
         return (d0 - 0.5D) * 0.9D;
     }
 
-    private static double sqr(double p_226843_0_) {
-        return p_226843_0_ * p_226843_0_;
+    private static double sqr(double d) {
+        return d * d;
     }
 }

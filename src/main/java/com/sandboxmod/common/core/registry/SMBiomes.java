@@ -1,6 +1,7 @@
 package com.sandboxmod.common.core.registry;
 
 import com.sandboxmod.common.core.SandboxMod;
+import com.sandboxmod.common.util.References;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.biome.*;
 import net.minecraft.world.gen.surfacebuilders.SurfaceBuilder;
@@ -25,6 +26,8 @@ public class SMBiomes {
     }
 
     private static Biome createCorruptedLands() {
+        final int BIOME_COLOR = References.CORRUPTED_COLOR;
+
         BiomeGenerationSettings.Builder settings = new BiomeGenerationSettings.Builder();
 
         DefaultBiomeFeatures.addDefaultCarvers(settings);
@@ -40,12 +43,12 @@ public class SMBiomes {
 
         BiomeAmbience.Builder ambience = new BiomeAmbience.Builder();
 
-        ambience.foliageColorOverride(0x822BB5);
-        ambience.grassColorOverride(0x822BB5);
-        ambience.waterColor(0x822BB5);
-        ambience.fogColor(0x822BB5);
-        ambience.waterFogColor(0x822BB5);
-        ambience.skyColor(0x822BB5);
+        ambience.foliageColorOverride(BIOME_COLOR);
+        ambience.grassColorOverride(BIOME_COLOR);
+        ambience.waterColor(BIOME_COLOR);
+        ambience.fogColor(BIOME_COLOR);
+        ambience.waterFogColor(BIOME_COLOR);
+        ambience.skyColor(BIOME_COLOR);
 
         return new Biome.Builder()
                 .biomeCategory(Biome.Category.NONE)

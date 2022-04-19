@@ -24,8 +24,15 @@ public class ClientWork {
         final int x = chunk.getPos().x;
         final int z = chunk.getPos().z;
 
+        world.clearTintCaches();
+
+        /*
+        // TODO - This sucks. Are there better alternatives
+        //        that do not cause brief frame freezing?
         for(int i = 0; i < 16; ++i) {
             world.setSectionDirtyWithNeighbors(x, i, z);
         }
+
+         */
     }
 }

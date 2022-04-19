@@ -4,6 +4,7 @@ import com.sandboxmod.common.core.registry.SMBiomes;
 import com.sandboxmod.common.core.registry.SMBlocks;
 import com.sandboxmod.common.core.registry.SMItems;
 import com.sandboxmod.common.network.PacketHandler;
+import com.sandboxmod.common.util.CorruptionTransformHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -34,6 +35,7 @@ public class SandboxMod {
     public void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             SMBiomes.registerBiomes();
+            CorruptionTransformHelper.registerAll();
         });
     }
 
