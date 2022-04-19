@@ -21,7 +21,7 @@ public class PurityFlowerBlock extends FlowerBlock {
     public PurityFlowerBlock() {
         super(Effects.REGENERATION, 450, AbstractBlock.Properties.of(Material.PLANT, MaterialColor.COLOR_GREEN)
                 .instabreak()
-                .lightLevel((state) -> 5)
+                .lightLevel((state) -> 8)
                 .noOcclusion()
                 .noCollission()
                 .randomTicks()
