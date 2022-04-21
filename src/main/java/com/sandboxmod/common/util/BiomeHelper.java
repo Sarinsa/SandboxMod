@@ -22,6 +22,11 @@ import static net.minecraft.world.biome.BiomeContainer.VERTICAL_MASK;
 
 public class BiomeHelper {
 
+    private static final ResourceLocation[] yeah = {
+            SandboxMod.resourceLoc("corrupted_lands"),
+            new ResourceLocation("plains")
+    };
+
     public static void setBiomeAt(@Nonnull ServerWorld world, @Nonnull Biome biome, @Nonnull BlockPos pos) {
         Chunk chunk = world.getChunkAt(pos);
         BiomeContainer biomeContainer = chunk.getBiomes();
@@ -48,6 +53,16 @@ public class BiomeHelper {
     //
     //------------------------------- COPY-PASTE STUFF FROM VANILLA -----------------------------------
     //
+
+    @Nullable
+    public static Biome getBiomeForPurifying(long biomeZoomSeed, IBiomeReader biomeReader, int x, int z) {
+        Biome uncached = getUncachedBiome(biomeZoomSeed, biomeReader, x, z);
+
+        if (uncached == getFromRegistry(biomeReader, yeah[0])) {
+            return getFromRegistry(biomeReader, yeah[1]);
+        }
+        return uncached;
+    }
 
 
     public static Biome getUncachedBiome(long biomeZoomSeed, IWorldReader worldReader, int x, int z) {

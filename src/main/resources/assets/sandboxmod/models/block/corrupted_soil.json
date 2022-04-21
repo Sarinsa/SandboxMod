@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "sandboxmod:block/corrupted_soil"
+  }
+}

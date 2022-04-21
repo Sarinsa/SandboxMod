@@ -2,6 +2,7 @@ package com.sandboxmod.common.core.registry;
 
 import com.sandboxmod.common.block.CorruptedLogBlock;
 import com.sandboxmod.common.block.CorruptedMassBlock;
+import com.sandboxmod.common.block.CorruptedSoilBlock;
 import com.sandboxmod.common.block.PurityFlowerBlock;
 import com.sandboxmod.common.core.SandboxMod;
 import net.minecraft.block.AbstractBlock;
@@ -25,6 +26,7 @@ public class SMBlocks {
 
 
     public static final RegistryObject<Block> CORRUPTED_MASS = register("corrupted_mass", CorruptedMassBlock::new, ItemGroup.TAB_DECORATIONS);
+    public static final RegistryObject<Block> CORRUPTED_SOIL = register("corrupted_soil", CorruptedSoilBlock::new, ItemGroup.TAB_DECORATIONS);
     public static final RegistryObject<Block> CORRUPTED_LOG = register("corrupted_log", CorruptedLogBlock::new, ItemGroup.TAB_DECORATIONS);
 
     public static final RegistryObject<Block> PURIFYING_FLOWER = register("purifying_flower", PurityFlowerBlock::new, ItemGroup.TAB_DECORATIONS);

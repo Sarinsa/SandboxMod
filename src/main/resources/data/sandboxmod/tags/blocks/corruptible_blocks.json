@@ -4,6 +4,8 @@
     "#minecraft:leaves",
     "#minecraft:flowers",
     "minecraft:bamboo",
-    "minecraft:bamboo_sapling"
+    "minecraft:bamboo_sapling",
+    "minecraft:cocoa",
+    "minecraft:sugar_cane"
   ]
 }

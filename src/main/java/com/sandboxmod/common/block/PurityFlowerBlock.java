@@ -1,7 +1,6 @@
 package com.sandboxmod.common.block;
 
-import com.sandboxmod.common.core.SandboxMod;
-import com.sandboxmod.common.util.BiomeHelper;
+import com.sandboxmod.common.blockentity.PurifyingFlowerTileEntity;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowerBlock;
@@ -9,11 +8,11 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.potion.Effects;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.server.ServerWorld;
-
-import java.util.Random;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorldReader;
 
 @SuppressWarnings("deprecation")
 public class PurityFlowerBlock extends FlowerBlock {
@@ -29,21 +28,22 @@ public class PurityFlowerBlock extends FlowerBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        Biome corrupted = BiomeHelper.getFromRegistry(world, SandboxMod.resourceLoc("corrupted_lands"));
+    public boolean canSurvive(BlockState state, IWorldReader worldReader, BlockPos pos) {
+        BlockPos belowPos = pos.below();
 
-        if (corrupted == null)
-            return;
+        if (state.getBlock() == this)
+            return worldReader.getBlockState(belowPos).isFaceSturdy(worldReader, belowPos, Direction.UP);
+        return this.mayPlaceOn(worldReader.getBlockState(belowPos), worldReader, belowPos);
+    }
 
-        BlockPos randomPos = pos.offset(
-                random.nextInt(5) - random.nextInt(5),
-                random.nextInt(5) - random.nextInt(5),
-                random.nextInt(5) - random.nextInt(5)
-        );
 
-        if (world.getBiome(randomPos) == corrupted) {
-            Biome originalBiome = BiomeHelper.getUncachedBiome(world.getBiomeManager().biomeZoomSeed, world, pos.getX(), pos.getZ());
-            BiomeHelper.setBiomeAt(world, originalBiome, randomPos);
-        }
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader blockReader) {
+        return new PurifyingFlowerTileEntity();
     }
 }

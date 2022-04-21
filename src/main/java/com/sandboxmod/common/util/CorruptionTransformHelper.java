@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RotatedPillarBlock;
+import net.minecraft.data.BlockStateVariantBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ public class CorruptionTransformHelper {
 
     /** Holds all registered converters until it is safe to properly construct them (after block registration) */
     private static final List<Pair<Supplier<Block>, Function<BlockState, BlockState>>> converterHolder = new ArrayList<>();
+
 
     /**
      * A Map containing all registered BlockState converters for corruption transformable blocks.<br>
@@ -63,6 +65,16 @@ public class CorruptionTransformHelper {
         addConverter(() -> Blocks.STRIPPED_JUNGLE_LOG, DefaultConverters.LOG_ANY);
         addConverter(() -> Blocks.JUNGLE_WOOD, DefaultConverters.LOG_ANY);
         addConverter(() -> Blocks.STRIPPED_JUNGLE_WOOD, DefaultConverters.LOG_ANY);
+
+        addConverter(() -> Blocks.DARK_OAK_LOG, DefaultConverters.LOG_ANY);
+        addConverter(() -> Blocks.STRIPPED_DARK_OAK_LOG, DefaultConverters.LOG_ANY);
+        addConverter(() -> Blocks.DARK_OAK_WOOD, DefaultConverters.LOG_ANY);
+        addConverter(() -> Blocks.STRIPPED_DARK_OAK_WOOD, DefaultConverters.LOG_ANY);
+
+        addConverter(() -> Blocks.GRASS_BLOCK, DefaultConverters.transformSimple(SMBlocks.CORRUPTED_SOIL.get()::defaultBlockState));
+        addConverter(() -> Blocks.DIRT, DefaultConverters.transformSimple(SMBlocks.CORRUPTED_SOIL.get()::defaultBlockState));
+        addConverter(() -> Blocks.PODZOL, DefaultConverters.transformSimple(SMBlocks.CORRUPTED_SOIL.get()::defaultBlockState));
+        addConverter(() -> Blocks.COARSE_DIRT, DefaultConverters.transformSimple(SMBlocks.CORRUPTED_SOIL.get()::defaultBlockState));
     }
 
 
@@ -107,5 +119,9 @@ public class CorruptionTransformHelper {
         public static final Function<BlockState, BlockState> LOG_ANY = (state) -> {
             return SMBlocks.CORRUPTED_LOG.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
         };
+
+        public static Function<BlockState, BlockState> transformSimple(Supplier<BlockState> stateSupplier) {
+            return (state) -> stateSupplier.get();
+        }
     }
 }

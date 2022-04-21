@@ -37,7 +37,8 @@ public class ClientRegistry {
     public static void registerBlockColors(ColorHandlerEvent.Block event) {
         BlockColors colors = event.getBlockColors();
 
-        colors.register((state, blockDisplayReader, pos, color) -> blockDisplayReader != null && pos != null ? BiomeColors.getAverageGrassColor(blockDisplayReader, pos) : CORRUPTED_COLOR, SMBlocks.CORRUPTED_MASS.get());
+        colors.register((state, blockDisplayReader, pos, color) -> blockDisplayReader != null && pos != null ? BiomeColors.getAverageGrassColor(blockDisplayReader, pos) : CORRUPTED_COLOR,
+                SMBlocks.CORRUPTED_MASS.get(), SMBlocks.CORRUPTED_SOIL.get());
     }
 
     @SubscribeEvent
@@ -48,6 +49,6 @@ public class ClientRegistry {
         itemColors.register((itemStack, color) -> {
             BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().defaultBlockState();
             return blockColors.getColor(blockState, null, null, color);
-        }, SMBlocks.CORRUPTED_MASS.get());
+        }, SMBlocks.CORRUPTED_MASS.get(), SMBlocks.CORRUPTED_SOIL.get());
     }
 }

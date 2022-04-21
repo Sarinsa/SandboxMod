@@ -17,7 +17,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -35,11 +34,11 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class CorruptedMassBlock extends Block {
@@ -65,13 +64,13 @@ public class CorruptedMassBlock extends Block {
 
 
     public CorruptedMassBlock() {
-        super(AbstractBlock.Properties.of(BlockHelper.Materials.CORRUPTED_MASS, MaterialColor.COLOR_PURPLE)
+        super(AbstractBlock.Properties.of(BlockHelper.Materials.CORRUPTED_MASS)
                 .strength(0.8F)
                 .noOcclusion()
                 .noCollission()
                 .sound(SoundType.WART_BLOCK)
                 .randomTicks()
-                .speedFactor(0.2F)
+                .speedFactor(0.8F)
         );
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(NORTH, false)
@@ -170,8 +169,6 @@ public class CorruptedMassBlock extends Block {
         BlockPos pos = useContext.getClickedPos();
         BlockState state = this.placeState(world, pos);
 
-        this.shapeByIndex = makeShapes();
-
         return state == null ? this.defaultBlockState() : state;
     }
 
@@ -192,29 +189,22 @@ public class CorruptedMassBlock extends Block {
     }
 
     @Nullable
-    private BlockState stateForSpread(IWorldReader world, BlockPos spreadPos) {
-        BlockState state = world.getBlockState(spreadPos);
-
-        if (spreadPos.getY() > world.getMaxBuildHeight() || spreadPos.getY() < 1)
+    public static BlockState stateForSpread(IWorldReader world, @Nullable BlockPos spreadPos) {
+        if (spreadPos == null)
             return null;
 
-        if (state.getFluidState().isEmpty() && (state.getMaterial().isReplaceable() || state.is(SMBlockTags.CORRUPTIBLE_BLOCKS))) {
-            BlockState spreadState = this.defaultBlockState();
-            boolean foundSturdy = false;
+        BlockState spreadState = SMBlocks.CORRUPTED_MASS.get().defaultBlockState();
+        boolean foundSturdy = false;
 
-            for (Direction direction : Direction.values()) {
-                BlockPos neighbor = spreadPos.relative(direction);
+        for (Direction direction : Direction.values()) {
+            BlockPos neighbor = spreadPos.relative(direction);
 
-                if (world.getBlockState(neighbor).isFaceSturdy(world, neighbor, direction.getOpposite())) {
-                    spreadState = spreadState.setValue(PROPERTY_BY_DIRECTION.get(direction), true);
-                    foundSturdy = true;
-                }
+            if (world.getBlockState(neighbor).isFaceSturdy(world, neighbor, direction.getOpposite())) {
+                spreadState = spreadState.setValue(PROPERTY_BY_DIRECTION.get(direction), true);
+                foundSturdy = true;
             }
-            return foundSturdy ? spreadState : null;
         }
-        else {
-            return null;
-        }
+        return foundSturdy ? spreadState : null;
     }
 
     @Override
@@ -241,37 +231,46 @@ public class CorruptedMassBlock extends Block {
         if (corrupted == null)
             return;
 
-        // Random chance of dying away if we are not in the corrupted lands biome.
+        // Die away if we are not in the corrupted biome
         if (world.getBiome(pos) != corrupted) {
-            if (random.nextInt(5) == 0)
-                world.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
-            return;
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
         }
         // Attempt to corrupt random neighbor
-        if (random.nextInt(10) == 1) {
+        if (random.nextInt(15) == 1) {
             BlockPos neighbor = pos.relative(Direction.getRandom(random));
             this.transformBlock(world, neighbor);
         }
         // Attempt to spread
         else {
-            BlockPos spreadPos = this.randomSpreadPos(pos, random);
+            BlockPos spreadPos = this.randomSpreadPos(world, pos, random);
+            BlockState spreadState = stateForSpread(world, spreadPos);
 
-            BlockState spreadState = this.stateForSpread(world, spreadPos);
-
-            if (spreadState == null)
+            if (spreadPos == null || spreadState == null)
                 return;
 
             if (world.getBiome(spreadPos) != corrupted) {
                 BiomeHelper.setBiomeAt(world, corrupted, spreadPos);
             }
             world.setBlock(spreadPos, spreadState, Constants.BlockFlags.DEFAULT);
-            world.playSound(null, spreadPos, SoundEvents.COMPOSTER_READY, SoundCategory.BLOCKS, 0.4F, 0.6F + (random.nextFloat() / 3));
+            world.playSound(null, spreadPos, SoundEvents.COMPOSTER_READY, SoundCategory.BLOCKS, 0.35F, 0.6F + (random.nextFloat() / 3));
         }
     }
 
-    private BlockPos randomSpreadPos(BlockPos pos, Random random) {
-        List<BlockPos> positions = BlockPos.betweenClosedStream(pos.offset(-2, -1, -2), pos.offset(2, 1, 2)).map(BlockPos::immutable).collect(Collectors.toList());
-        return positions.get(random.nextInt(positions.size()));
+    @Nullable
+    private BlockPos randomSpreadPos(IWorld world, BlockPos origin, Random random) {
+        Iterable<BlockPos> positions = BlockPos.betweenClosed(origin.offset(-1, -1, -1), origin.offset(1, 1, 1));
+        List<BlockPos> validPositions = new ArrayList<>();
+
+        for (BlockPos pos : positions) {
+            if (pos.getY() < world.getMaxBuildHeight() && pos.getY() > 1) {
+                BlockState state = world.getBlockState(pos);
+
+                if (state.getFluidState().isEmpty() && (state.getMaterial().isReplaceable() || state.is(SMBlockTags.CORRUPTIBLE_BLOCKS))) {
+                    validPositions.add(pos.immutable());
+                }
+            }
+        }
+        return validPositions.isEmpty() ? null : validPositions.get(random.nextInt(validPositions.size()));
     }
 
     private void transformBlock(IWorld world, BlockPos pos) {
